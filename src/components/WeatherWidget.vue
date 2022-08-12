@@ -15,6 +15,7 @@
           </div>
           <div slot="footer" class="add-city">
             <h5 class="add-city__title">Add location</h5>
+            <p class="add-city__error">{{errorMsg}}</p>
             <form class="add-city__form" @submit.prevent>
               <input type="text" class="add-city__input" placeholder="e.g. London" v-bind:value="newCity" @input="inputNewCity">
               <button @click="addCity" class="add-city__btn" :disabled="newCity.length < 3">Add</button>
@@ -45,6 +46,7 @@ export default {
       addCity: 'weatherModule/addCity',
     }),
     ...mapMutations({
+      setErrorMsg: 'weatherModule/setErrorMsg',
       setWeather: 'weatherModule/setWeather',
       setNewCity: 'weatherModule/setNewCity',
       showModal: 'modalModule/showModal',
@@ -57,6 +59,7 @@ export default {
       this.showModal(false);
     },
     inputNewCity(event) {
+      this.setErrorMsg('');
       this.setNewCity(event.target.value);
     }
   },
@@ -64,7 +67,8 @@ export default {
     ...mapState({
       weather: state => state.weatherModule.weather,
       newCity: state => state.weatherModule.newCity,
-      isOpened: state => state.modalModule.isOpened
+      isOpened: state => state.modalModule.isOpened,
+      errorMsg: state => state.weatherModule.errorMsg
     }),
     weather: {
         get() {
@@ -75,6 +79,7 @@ export default {
         }
     }
   },
+
   mounted() {
     this.fetchWeather();
   },
@@ -117,6 +122,11 @@ export default {
 
     &__title {
       margin: 0 0 10px;
+    }
+
+    &__error {
+      color: red;
+      margin: 0 0 5px;
     }
 
     &__form {

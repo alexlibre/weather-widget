@@ -102,3 +102,11 @@ export const calcDewPoint = (deg, hum) => {
   }
   return dewPoint;
 }
+
+export const capitalizeFirst = (text) => {
+  if (text.indexOf('.') !== -1) {
+    return text.split('.').map(item => item[0].toUpperCase() + item.substring(1)).join();
+  }
+
+  return text[0].toUpperCase() + text.substring(1);
+} 

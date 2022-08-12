@@ -1,10 +1,12 @@
 import axios from 'axios';
+import { capitalizeFirst } from "@/utils";
 
 export const weatherModule = {
   state: () => {
     return {
       weather: [],
       newCity: '',
+      errorMsg: '',
       userLocation: []
     }
   },
@@ -21,7 +23,10 @@ export const weatherModule = {
       state.weather = [...state.weather].filter(item => item.id != id);
     },
     setUserLocation(state, userLocation) {
-      state.userLocation = userLocation
+      state.userLocation = userLocation;
+    },
+    setErrorMsg(state, msg) {
+      state.errorMsg = msg;
     }
   },
   actions: {
@@ -31,24 +36,27 @@ export const weatherModule = {
           return;
         }
 
-        navigator.geolocation.getCurrentPosition(({ coords }) => {
+        await navigator.geolocation.getCurrentPosition(async ({ coords }) => {
           commit('setUserLocation', {
             lat: coords.latitude,
             lon: coords.longitude
-          })
-        });
+          });
 
-        const response = await axios.get("https://api.openweathermap.org/data/2.5/weather", {
-          params: {
-            lat: state.userLocation.lat,
-            lon: state.userLocation.lon,
-            appid: process.env.VUE_APP_WEATHER_API_KEY,
-            units: 'metric'
+          const response = await axios.get("https://api.openweathermap.org/data/2.5/weather", {
+            params: {
+              lat: state.userLocation.lat,
+              lon: state.userLocation.lon,
+              appid: 'b55110c6a9590ad33803622c96ad9df0',
+              units: 'metric'
+            }
+          });
+
+          if (!state.weather.find(item => item.id === response.data.id)) {
+            commit('setWeather', [...state.weather, response.data]);
           }
+        }, null, {
+          enableHighAccuracy: true
         });
-        if (!state.weather.find(item => item.id === response.data.id)) {
-          commit('setWeather', [...state.weather, response.data]);
-        }
       } catch (error) {
         console.error(error);
       }
@@ -64,7 +72,7 @@ export const weatherModule = {
         const response = await axios.get("https://api.openweathermap.org/data/2.5/weather", {
           params: {
             q: city,
-            appid: process.env.VUE_APP_WEATHER_API_KEY,
+            appid: 'b55110c6a9590ad33803622c96ad9df0',
             units: 'metric'
           }
         });
@@ -74,11 +82,11 @@ export const weatherModule = {
         }
 
         commit('setWeather', [...state.weather, response.data]);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        commit('setNewCity', '');
         commit('modalModule/showModal', false, { root: true });
+        commit('setNewCity', '');
+      } catch (error) {
+        commit('setErrorMsg', capitalizeFirst(error.response.data.message));
+        commit('modalModule/showModal', true, { root: true });
       }
     }
   },

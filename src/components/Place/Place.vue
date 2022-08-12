@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import {timeFormat, convertWindSpeed, convertWindDirection, calcDewPoint} from '@/utils';
+import {timeFormat, convertWindSpeed, convertWindDirection, calcDewPoint, capitalizeFirst} from '@/utils';
 import Sunrise from '@/assets/sunrise.svg';
 import Sunset from '@/assets/sunset.svg';
 import DirectionIcon from '@/assets/direction.svg';
@@ -52,7 +52,7 @@ export default {
     },
     conditions() {
       const description = this.weatherData.weather[0].description;
-      return description[0].toUpperCase() + description.substring(1);
+      return capitalizeFirst(description);
     },
     windRotate() {
       return { transform: 'rotate(' + this.weatherData.wind.deg + 'deg)'}
