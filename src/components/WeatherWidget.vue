@@ -2,24 +2,26 @@
   <div>
     <div class="widget">
       <button class="widget__settings-btn" @click="openModal"><SettingsIcon/></button>
-      <Modal v-if="isOpened" @closeModal="closeModal" class="settings">
-        <div slot="header" class="settings__header">
-          <h2>Settings</h2>
-          <button class="modal__close-btn" @click="closeModal"><CloseIcon/></button>
-        </div>
-        <div v-if="weather.length" slot="body" class="settings__body">
-          <draggable v-model='weather'>
-            <Entry v-for="entry in weather" :key="entry.id" :entryData="entry" @removeEntry="removeWeatherItem" />
-          </draggable>
-        </div>
-        <div slot="footer" class="add-city">
-          <h5 class="add-city__title">Add location</h5>
-          <form class="add-city__form" @submit.prevent>
-            <input type="text" class="add-city__input" placeholder="e.g. London" v-bind:value="newCity" @input="inputNewCity">
-            <button @click="addCity" class="add-city__btn">Add</button>
-          </form>
-        </div>
-      </Modal>
+      <transition name="fade">
+        <Modal v-if="isOpened" @closeModal="closeModal" class="settings">
+          <div slot="header" class="settings__header">
+            <h2>Settings</h2>
+            <button class="modal__close-btn" @click="closeModal"><CloseIcon/></button>
+          </div>
+          <div v-if="weather.length" slot="body" class="settings__body">
+            <draggable v-model='weather' class="settings__items">
+              <Entry v-for="entry in weather" :key="entry.id" :entryData="entry" @removeEntry="removeWeatherItem" />
+            </draggable>
+          </div>
+          <div slot="footer" class="add-city">
+            <h5 class="add-city__title">Add location</h5>
+            <form class="add-city__form" @submit.prevent>
+              <input type="text" class="add-city__input" placeholder="e.g. London" v-bind:value="newCity" @input="inputNewCity">
+              <button @click="addCity" class="add-city__btn" :disabled="newCity.length < 3">Add</button>
+            </form>
+          </div>
+        </Modal>
+      </transition>
       <div class="widget__list" v-if="weather.length">
         <Place v-for="weatherItem in weather" :key="weatherItem.id" :weatherData="weatherItem" />
       </div>
@@ -106,8 +108,8 @@ export default {
     background: none;
     border: 0;
     cursor: pointer;
-    width: 24px;
-    height: 24px
+    width: 32px;
+    height: 32px
   }
 
   .add-city {
@@ -121,26 +123,37 @@ export default {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 5px;
     }
 
     &__input, &__btn {
-      border: 1px solid #999;
+      border: 1px solid #eee;
       background: white;
       font-size: 16px;
       font-family: Avenir, Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       padding: 8px 16px;
-      cursor: pointer;
       flex-grow: 1;
+      outline-width: 1px;
     }
 
     &__input {
       min-width: 60px;
+      -webkit-appearance: none;
     }
 
     &__btn {
       flex-shrink: 0;
+
+      &:not(:disabled) {
+        cursor: pointer;
+
+        &:hover {
+          background-color: rgb(194, 252, 196);
+          color: rgb(46, 93, 48);
+        }
+      }
     }
   }
 }
@@ -156,9 +169,22 @@ export default {
 
   &__body {
     padding: 0 0 30px;
+  }
+
+  &__items {
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .16s linear;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

@@ -14,5 +14,5 @@ module.exports = defineConfig({
       ],
     }
   },
-  publicPath: '/weather/'
+  publicPath: '/weather-widget/'
 })

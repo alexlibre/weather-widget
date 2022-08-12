@@ -54,6 +54,11 @@ export default {
     border: 1px solid gainsboro;
     cursor: pointer;
     margin-left: auto;
+
+    &:hover {
+      background-color: rgb(252, 194, 194);
+      border-color: rgb(252, 194, 194);
+    }
   }
 }
 </style>
