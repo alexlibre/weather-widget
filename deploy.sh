@@ -8,6 +8,6 @@ cd dist
 
 git add -A
 git commit -m "Deployment"
-git push -f git@github.com:alexlibre/weather-widget.git master:gh-pages
+git subtree push --prefix $1 origin gh-pages
 
 cd -
