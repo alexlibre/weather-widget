@@ -23,9 +23,7 @@
       </div>
 
       <div class="grid__item grid__item_time">
-        <div class="time">
-          <TimeModule />
-        </div>
+        <TimeModule />
       </div>
       <!-- <div class="grid__item grid__item_news">
         <NewsModule/>
@@ -105,17 +103,27 @@ export default {
       gap: 4rem;
       position: relative;
 
+      &:before {
+        content: '';
+        display: block;
+        position: absolute;     
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 2rem;
+        background: linear-gradient(var(--color-bg), transparent);   
+      }
 
-  &:after {
-    content: '';
-    display: block;
-    bottom: 0;
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 4rem;
-    background: linear-gradient(transparent, #000);
-  }
+      &:after {
+        content: '';
+        display: block;
+        bottom: 0;
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 2rem;
+        background: linear-gradient(transparent, var(--color-bg));
+      }
     }
 
     &_time {
@@ -129,7 +137,7 @@ export default {
 }
 
 .outside {
-  max-width: 44rem;
+  max-width: 56rem;
   width: 100%;
   max-height: calc(100vh - 5rem);
   overflow-y: auto;
@@ -152,11 +160,15 @@ h2 {
   @include h2();
 }
 
+h4 {
+  @include h4();
+}
+
 @media screen and (orientation: portrait) {
   #app {
     padding: 0;
   }
-  
+
   .grid {
     grid-template-columns: 1fr 1fr;
     grid-template-areas: 'time time' 'weather weather';

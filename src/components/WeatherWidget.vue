@@ -146,6 +146,7 @@ export default {
       padding: 8px 16px;
       flex-grow: 1;
       outline-width: 1px;
+      -webkit-appearance: none;
 
       &:focus {
         outline-color: var(--color-bg);
@@ -154,7 +155,6 @@ export default {
 
     &__input {
       min-width: 60px;
-      -webkit-appearance: none;
     }
 
     &__btn {

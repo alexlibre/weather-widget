@@ -1,7 +1,7 @@
 <template>
   <div class="place">
     <div class="place__row">
-      <h1 class="place__temp">{{ temp }}°</h1>
+      <h1 class="place__temp">{{ temp }}<span class="deg">°</span></h1>
       <div class="place__conditions">
         <div class="place__condition">
           <div class="place__condition-icon">
@@ -345,5 +345,9 @@ export default {
     @include text();
     font-weight: 900;
   }
+}
+
+.deg {
+  font-weight: 100;
 }
 </style>
