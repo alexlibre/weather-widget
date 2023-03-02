@@ -93,7 +93,7 @@ export default {
 .outside {
   max-width: 44rem;
   width: 100%;
-  max-height: 26.25rem;
+  max-height: calc(100vh - 5rem);
   overflow-y: auto;
   padding-right: 1rem;
 }
