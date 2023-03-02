@@ -27,9 +27,9 @@
           <TimeModule/>
         </div>
       </div>
-      <div class="grid__item grid__item_news">
+      <!-- <div class="grid__item grid__item_news">
         <NewsModule/>
-      </div>
+      </div> -->
       
     </main>
   </div>
@@ -93,7 +93,7 @@ export default {
 .outside {
   max-width: 44rem;
   width: 100%;
-  max-height: 26.2rem;
+  max-height: 26.25rem;
   overflow-y: auto;
   padding-right: 1rem;
 }

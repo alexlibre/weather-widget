@@ -47,7 +47,7 @@ export const weatherModule = {
             lon: coords.longitude
           });
 
-          const responseWeather = await axios.get("http://api.openweathermap.org/data/2.5/weather", {
+          const responseWeather = await axios.get("https://api.openweathermap.org/data/2.5/weather", {
             params: {
               lat: state.userLocation.lat,
               lon: state.userLocation.lon,
@@ -57,7 +57,7 @@ export const weatherModule = {
             }
           });
           
-          const responsePollution = await axios.get("http://api.openweathermap.org/data/2.5/air_pollution", {
+          const responsePollution = await axios.get("https://api.openweathermap.org/data/2.5/air_pollution", {
             params: {
               lat: state.userLocation.lat,
               lon: state.userLocation.lon,
@@ -96,7 +96,7 @@ export const weatherModule = {
           }
         });
 
-        const responsePollution = await axios.get("http://api.openweathermap.org/data/2.5/air_pollution", {
+        const responsePollution = await axios.get("https://api.openweathermap.org/data/2.5/air_pollution", {
             params: {
               lat: responseWeather.data.coord.lat,
               lon: responseWeather.data.coord.lon,

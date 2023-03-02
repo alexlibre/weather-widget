@@ -30,8 +30,8 @@
   </div>
 </template>
 <script>
-import Modal from "./Modal/Modal.vue";
 import Place from "./Place/Place.vue";
+import Modal from "./Modal/Modal.vue";
 import Entry from "./Entry/Entry.vue";
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import SettingsIcon from '../assets/settings.svg';

@@ -4,10 +4,8 @@ set -e
 
 yarn build
 
-cd dist
-
-git add -A
+git add dist -f
 git commit -m "Deployment"
-git subtree push origin master gh-pages
+git subtree push --prefix dist origin gh-pages
 
 cd -
