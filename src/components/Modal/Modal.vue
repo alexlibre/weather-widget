@@ -24,7 +24,7 @@ export default {
 </script>
 <style lang="scss">
 .modal {
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   width: 50%;
@@ -61,6 +61,16 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+}
+
+@media screen and (orientation: portrait) {
+  .modal {
+    width: 100%;
+
+    &__cloak {
+      left: 0;
+    }
   }
 }
 </style>

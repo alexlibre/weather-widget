@@ -3,7 +3,7 @@
     <main class="grid">
       <div class="grid__item grid__item_weather">
         <div class="outside">
-          <WeatherWidget/>
+          <WeatherWidget />
         </div>
         <!-- <div class="inside">
           <div class="place">
@@ -21,16 +21,16 @@
           </div>
         </div> -->
       </div>
-      
+
       <div class="grid__item grid__item_time">
         <div class="time">
-          <TimeModule/>
+          <TimeModule />
         </div>
       </div>
       <!-- <div class="grid__item grid__item_news">
         <NewsModule/>
       </div> -->
-      
+
     </main>
   </div>
 </template>
@@ -45,6 +45,30 @@ export default {
   name: 'App',
   components: {
     WeatherWidget, DropIcon, NewsModule, TimeModule
+  },
+  mounted() {
+    const appendRule = (sheet) => {
+      const len = sheet.cssRules.length;
+      sheet.insertRule('*{}', len);
+      return sheet.cssRules[len];
+    }
+
+    const ruleForScroll = appendRule(document.styleSheets[0]);
+    ruleForScroll.selectorText = '::-webkit-scrollbar-thumb';
+    ruleForScroll.style["background"] = `rgba(128,128,128,.4)`;
+    ruleForScroll.style["transition"] = `background .2s ease`;
+
+    let timer = 0;
+    document.querySelector('.outside').addEventListener('scroll', function wheelStyle() {
+    clearTimeout(timer)
+      ruleForScroll.selectorText = '::-webkit-scrollbar-thumb';
+      ruleForScroll.style["background"] = `white`;
+      timer = setTimeout(() => {
+        ruleForScroll.selectorText = '::-webkit-scrollbar-thumb';
+        ruleForScroll.style["background"] = `rgba(128,128,128,.4)`;
+      }, 300)
+
+    })
   }
 }
 </script>
@@ -69,7 +93,7 @@ export default {
   display: grid;
   grid-gap: rem;
   grid-template-columns: 1fr auto;
-  grid-template-areas: 'weather time' 'news news';
+  grid-template-areas: 'weather time';
 
   &__item {
     // box-shadow: inset 0 0 0 1px var(--font-color-ghost);
@@ -79,11 +103,25 @@ export default {
       grid-area: weather;
       display: flex;
       gap: 4rem;
+      position: relative;
+
+
+  &:after {
+    content: '';
+    display: block;
+    bottom: 0;
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 4rem;
+    background: linear-gradient(transparent, #000);
+  }
     }
 
     &_time {
       grid-area: time;
     }
+
     &_news {
       grid-area: news;
     }
@@ -96,6 +134,7 @@ export default {
   max-height: calc(100vh - 5rem);
   overflow-y: auto;
   padding-right: 1rem;
+  padding-bottom: 4rem;
 }
 
 .inside {
@@ -114,13 +153,19 @@ h2 {
 }
 
 @media screen and (orientation: portrait) {
+  #app {
+    padding: 0;
+  }
+  
   .grid {
     grid-template-columns: 1fr 1fr;
-    grid-template-areas: 'time time' 'weather weather' 'news news';
+    grid-template-areas: 'time time' 'weather weather';
 
     & .outside {
       max-width: 100%;
+      overflow-y: auto;
+      max-height: calc(100vh - 15.9375rem); 
     }
   }
-} 
+}
 </style>

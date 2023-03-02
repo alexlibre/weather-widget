@@ -14,7 +14,7 @@ export default {
     },
     computed: {
         currentTime() {
-            return moment(this.time).format("HH:mm");
+            return moment(this.time).format("HH:mm:ss");
         }
     },
     methods: {

@@ -35,7 +35,7 @@ export const weatherModule = {
   },
   actions: {
     async fetchWeather({ state, commit }) {
-      console.log(state.weather[0] ? Math.round(Date.now() / 1000) - state.weather[0].dt : 'undef', 'обновлено');
+      // console.log(state.weather[0] ? Math.round(Date.now() / 1000) - state.weather[0].dt : 'undef', 'обновлено');
       try {
         if (state.userLocation && state.weather[0] && Math.round(Date.now() / 1000) - state.weather[0].dt < 600) {
           return;
@@ -66,10 +66,8 @@ export const weatherModule = {
           });
 
           const weather = {...responseWeather.data, ...responsePollution.data};
-          console.log(weather)
 
           if (!state.weather.find(item => item.id === responseWeather.data.id)) {
-            console.log(responseWeather);
             commit('setWeather', [...state.weather, weather]);
           }
         }, null, {
@@ -105,7 +103,6 @@ export const weatherModule = {
           });
 
         const weather = await {...responseWeather.data, ...responsePollution.data};
-        console.log('add city', weather)
 
         if (state.weather.find(item => item.id === responseWeather.data.id)) {
           return;

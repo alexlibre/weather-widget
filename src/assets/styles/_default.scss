@@ -14,17 +14,26 @@ html {
 }
 
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
+    // transition: background .2s ease;
+    
 }
 
-::-webkit-scrollbar-track {
-    border-radius: 6px;
-    background-color: rgba(128,128,128, .2);
-}
+// ::-webkit-scrollbar-track {
+//     border-radius: 6px;
+//     background-color: rgba(128,128,128, .2);
+// }
 
-::-webkit-scrollbar-thumb {
-    border-radius: 6px;
-    background-color: var(--font-color);
+// ::-webkit-scrollbar-thumb {
+//     border-radius: 6px;
+//     background: rgba(128,128,128, .4);
+// }
 
+
+@media screen and (orientation: portrait) {
+    html {
+        font-size: calc(20px * 100vmax / 1920px);
+        user-select: none;
+    }
 }

@@ -16,17 +16,19 @@
           <h5 class="add-city__title">Add location</h5>
           <p class="add-city__error">{{errorMsg}}</p>
           <form class="add-city__form" @submit.prevent>
-            <input type="text" class="add-city__input" placeholder="e.g. London" v-bind:value="newCity" @input="inputNewCity">
+            <input type="text" class="add-city__input" placeholder="напрмер Лондон" v-bind:value="newCity" @input="inputNewCity">
             <button @click="addCity" class="add-city__btn" :disabled="newCity.length < 3">Найти</button>
           </form>
         </div>
       </Modal>
 
     </transition>
-    <div class="widget__list" v-if="weather.length">
-      <Place v-for="(weatherItem, idx) in weather" :key="weatherItem.id" :weatherData="weatherItem"/>
-    </div>
-    <h3 class="widget__empty" v-else>Список городов пуст</h3>
+    
+      <transition-group v-if="weather.length" name="scale" tag="div" class="widget__list" >
+        <Place v-for="(weatherItem, idx) in weather" :key="weatherItem.id" :weatherData="weatherItem"/>
+      </transition-group>
+      <h3 class="widget__empty" v-else>Список городов пуст</h3>
+    
   </div>
 </template>
 <script>
@@ -195,11 +197,23 @@ export default {
 .fade-enter-active,
 .fade-leave-active {
   transition: transform .3s cubic-bezier(0.455, 0.03, 0.515, 0.955), opacity .2s linear .1s;
+  transform-origin: top center;
 }
 
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
   transform: translateY(-100%);
+}
+
+.scale-enter-active,
+.scale-leave-active {
+  transition: transform .3s cubic-bezier(0.455, 0.03, 0.515, 0.955), opacity .2s linear .1s;
+}
+
+.scale-enter,
+.scale-leave-to {
+  opacity: 0;
+  transform: scale(0);
 }
 </style>

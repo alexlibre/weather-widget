@@ -172,6 +172,10 @@ export default {
   },
   components: {
     ArrowIcon, DropIcon
+  },
+  mounted() {
+    console.warn('Обновление погоды: ',this.location, this.refreshedAt)
+    console.warn('Обновление качества воздуха: ',this.location, this.refreshedPolutionAt)
   }
 }
 </script>
@@ -202,7 +206,7 @@ export default {
     margin-left: auto;
     display: flex;
     align-items: flex-start;
-    gap: 4rem;
+    gap: 1rem;
     padding-top: 2rem;
   }
 
@@ -211,6 +215,7 @@ export default {
     flex-direction: column;
     align-items: center;
     gap: .625rem;
+    width: 8rem;
 
     &-icon {
       display: flex;
