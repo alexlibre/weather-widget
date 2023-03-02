@@ -49,9 +49,12 @@
           <p>{{ percent.component }}</p>
           <p>{{ airPollutionCurrent.find(item => item[0] === percent.component)[1] }}</p>
           <div>
-            <div :style="`width: calc(${percent.percentage}%`"></div>
+            <div 
+              :style="`width: calc(${Math.min(percent.percentage, 100)}%`"
+              :class="percent.percentage > 100 ? 'alert' : ''"
+            ></div>
           </div>
-          <p>{{ percent.percentage.toFixed(1) }}%</p>
+          <p :class="percent.percentage > 100 ? 'alert' : ''">{{ percent.percentage.toFixed(1) }}%</p>
         </div>
       </div>
     </div>
@@ -299,6 +302,11 @@ export default {
       width: 4rem;
       font-size: 1rem;
 
+      &.alert {
+        font-weight: 900;
+        color: red;
+      }
+
       &:last-child {
         text-align: right;
       }
@@ -306,7 +314,7 @@ export default {
 
     &>div {
       flex: 1;
-      height: 1rem;
+      height: .5rem;
       border-left: 1px solid var(--font-color-ghost);
       border-right: 1px solid var(--font-color-ghost);
       padding: 0 0.5rem;
@@ -316,6 +324,10 @@ export default {
         background-color: var(--font-color);
         width: 0;
         transition: width .2s ease;
+
+        &.alert {
+          background-color: red;
+        }
       }
     }
   }
