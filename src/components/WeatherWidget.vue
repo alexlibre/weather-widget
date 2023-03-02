@@ -1,33 +1,31 @@
 <template>
-  <div>
-    <div class="widget">
-      <button class="widget__settings-btn" @click="openModal"><SettingsIcon/></button>
-      <transition name="fade">
-        <Modal v-if="isOpened" @closeModal="closeModal" class="settings">
-          <div slot="header" class="settings__header">
-            <h2>Settings</h2>
-            <button class="modal__close-btn" @click="closeModal"><CloseIcon/></button>
-          </div>
-          <div v-if="weather.length" slot="body" class="settings__body">
-            <draggable v-model='weather' class="settings__items">
-              <Entry v-for="entry in weather" :key="entry.id" :entryData="entry" @removeEntry="removeWeatherItem" />
-            </draggable>
-          </div>
-          <div slot="footer" class="add-city">
-            <h5 class="add-city__title">Add location</h5>
-            <p class="add-city__error">{{errorMsg}}</p>
-            <form class="add-city__form" @submit.prevent>
-              <input type="text" class="add-city__input" placeholder="e.g. London" v-bind:value="newCity" @input="inputNewCity">
-              <button @click="addCity" class="add-city__btn" :disabled="newCity.length < 3">Add</button>
-            </form>
-          </div>
-        </Modal>
-      </transition>
-      <div class="widget__list" v-if="weather.length">
-        <Place v-for="weatherItem in weather" :key="weatherItem.id" :weatherData="weatherItem" />
-      </div>
-      <h3 class="widget__empty" v-else>No cities added</h3>
+  <div class="widget">
+    <button class="widget__settings-btn" @click="openModal"><SettingsIcon/></button>
+    <transition name="fade">
+      <Modal v-if="isOpened" @closeModal="closeModal" class="settings">
+        <div slot="header" class="settings__header">
+          <h2>Настройки</h2>
+          <button class="modal__close-btn" @click="closeModal"><CloseIcon/></button>
+        </div>
+        <div v-if="weather.length" slot="body" class="settings__body">
+          <draggable v-model='weather' class="settings__items">
+            <Entry v-for="entry in weather" :key="entry.id" :entryData="entry" @removeEntry="removeWeatherItem" />
+          </draggable>
+        </div>
+        <div slot="footer" class="add-city">
+          <h5 class="add-city__title">Add location</h5>
+          <p class="add-city__error">{{errorMsg}}</p>
+          <form class="add-city__form" @submit.prevent>
+            <input type="text" class="add-city__input" placeholder="e.g. London" v-bind:value="newCity" @input="inputNewCity">
+            <button @click="addCity" class="add-city__btn" :disabled="newCity.length < 3">Найти</button>
+          </form>
+        </div>
+      </Modal>
+    </transition>
+    <div class="widget__list" v-if="weather.length">
+      <Place v-for="(weatherItem, idx) in weather" :key="weatherItem.id" :weatherData="weatherItem"/>
     </div>
+    <h3 class="widget__empty" v-else>Список городов пуст</h3>
   </div>
 </template>
 <script>
@@ -37,6 +35,7 @@ import Entry from "./Entry/Entry.vue";
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import SettingsIcon from '../assets/settings.svg';
 import CloseIcon from '../assets/close.svg';
+
 import draggable from 'vuedraggable';
 
 export default {
@@ -68,7 +67,8 @@ export default {
       weather: state => state.weatherModule.weather,
       newCity: state => state.weatherModule.newCity,
       isOpened: state => state.modalModule.isOpened,
-      errorMsg: state => state.weatherModule.errorMsg
+      errorMsg: state => state.weatherModule.errorMsg,
+      airPollution: state => state.weatherModule.airPollution
     }),
     weather: {
         get() {
@@ -87,29 +87,26 @@ export default {
 }
 </script>
 <style lang="scss">
+@import "@/assets/styles/mixins";
+
 .widget {
-  overflow: hidden;
-  padding: 30px;
-  max-width: 360px;
-  margin: 20px auto;
-  position: relative;
-  background-color: rgb(246, 246, 246);
-  min-height: 500px;
-
-  &__empty {
-    padding: 16px;
-  }
-
+  
   &__list {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 2rem;
+
+    & > * {
+      &:not(:first-child) {
+        border-top: 1px solid var(--font-color-ghost);
+      }
+    }
   }
 
   &__settings-btn {
-    position: absolute;
-    right: 45px;
-    top: 38px;
+    position: fixed;
+    right: 20px;
+    top: 20px;
     background: none;
     border: 0;
     cursor: pointer;
@@ -121,6 +118,7 @@ export default {
     width: 100%;
 
     &__title {
+      @include small();
       margin: 0 0 10px;
     }
 
@@ -137,8 +135,7 @@ export default {
     }
 
     &__input, &__btn {
-      border: 1px solid #eee;
-      background: white;
+      border: 1px solid var(--font-color);
       font-size: 16px;
       font-family: Avenir, Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
@@ -146,6 +143,10 @@ export default {
       padding: 8px 16px;
       flex-grow: 1;
       outline-width: 1px;
+
+      &:focus {
+        outline-color: var(--color-bg);
+      }
     }
 
     &__input {
@@ -155,21 +156,22 @@ export default {
 
     &__btn {
       flex-shrink: 0;
+      background: none;
+      color: var(--font-color);
 
       &:not(:disabled) {
         cursor: pointer;
+      }
 
-        &:hover {
-          background-color: rgb(194, 252, 196);
-          color: rgb(46, 93, 48);
-        }
+      &:disabled {
+        opacity: 0.5;
       }
     }
   }
 }
 
 .settings {
-    background-color: rgb(246, 246, 246);
+  background: var(--color-bg);
 
   &__header {
     display: flex;
@@ -185,16 +187,18 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    color: var(--color-bg);
   }
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity .16s linear;
+  transition: transform .3s cubic-bezier(0.455, 0.03, 0.515, 0.955), opacity .2s linear .1s;
 }
 
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
+  transform: translateY(-100%);
 }
 </style>

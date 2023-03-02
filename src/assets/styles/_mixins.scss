@@ -1,0 +1,25 @@
+@mixin h1 {
+    font-size: 9rem;
+    font-weight: 900;
+    line-height: 10.9375rem;
+}
+
+@mixin h2 {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 3.5rem;
+}
+
+@mixin text {
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+}
+
+@mixin small {
+    font-size: 1rem;
+    line-height: 2rem;
+}
+
+@mixin strong {
+    font-weight: bolder;
+}

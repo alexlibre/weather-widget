@@ -5,6 +5,7 @@ export const weatherModule = {
   state: () => {
     return {
       weather: [],
+      airPollution: {},
       newCity: '',
       errorMsg: '',
       userLocation: []
@@ -27,12 +28,16 @@ export const weatherModule = {
     },
     setErrorMsg(state, msg) {
       state.errorMsg = msg;
+    },
+    setAirPollution(state, airPollution) {
+      state.airPollution = airPollution;
     }
   },
   actions: {
     async fetchWeather({ state, commit }) {
+      console.log(state.weather[0] ? Math.round(Date.now() / 1000) - state.weather[0].dt : 'undef', 'обновлено');
       try {
-        if (state.userLocation && state.weather.length !== 0) {
+        if (state.userLocation && state.weather[0] && Math.round(Date.now() / 1000) - state.weather[0].dt < 600) {
           return;
         }
 
@@ -42,17 +47,30 @@ export const weatherModule = {
             lon: coords.longitude
           });
 
-          const response = await axios.get("https://api.openweathermap.org/data/2.5/weather", {
+          const responseWeather = await axios.get("http://api.openweathermap.org/data/2.5/weather", {
             params: {
               lat: state.userLocation.lat,
               lon: state.userLocation.lon,
-              appid: 'b55110c6a9590ad33803622c96ad9df0',
-              units: 'metric'
+              appid: '4780e6411a8b61a4f735f5b116b440ed',
+              units: 'metric',
+              lang: 'ru'
+            }
+          });
+          
+          const responsePollution = await axios.get("http://api.openweathermap.org/data/2.5/air_pollution", {
+            params: {
+              lat: state.userLocation.lat,
+              lon: state.userLocation.lon,
+              appid: '4780e6411a8b61a4f735f5b116b440ed',
             }
           });
 
-          if (!state.weather.find(item => item.id === response.data.id)) {
-            commit('setWeather', [...state.weather, response.data]);
+          const weather = {...responseWeather.data, ...responsePollution.data};
+          console.log(weather)
+
+          if (!state.weather.find(item => item.id === responseWeather.data.id)) {
+            console.log(responseWeather);
+            commit('setWeather', [...state.weather, weather]);
           }
         }, null, {
           enableHighAccuracy: true
@@ -69,23 +87,35 @@ export const weatherModule = {
       }
 
       try {
-        const response = await axios.get("https://api.openweathermap.org/data/2.5/weather", {
+        const responseWeather = await axios.get("https://api.openweathermap.org/data/2.5/weather", {
           params: {
             q: city,
-            appid: 'b55110c6a9590ad33803622c96ad9df0',
-            units: 'metric'
+            appid: '4780e6411a8b61a4f735f5b116b440ed',
+            units: 'metric',
+            lang: 'ru'
           }
         });
 
-        if (state.weather.find(item => item.id === response.data.id)) {
+        const responsePollution = await axios.get("http://api.openweathermap.org/data/2.5/air_pollution", {
+            params: {
+              lat: responseWeather.data.coord.lat,
+              lon: responseWeather.data.coord.lon,
+              appid: '4780e6411a8b61a4f735f5b116b440ed',
+            }
+          });
+
+        const weather = await {...responseWeather.data, ...responsePollution.data};
+        console.log('add city', weather)
+
+        if (state.weather.find(item => item.id === responseWeather.data.id)) {
           return;
         }
 
-        commit('setWeather', [...state.weather, response.data]);
+        commit('setWeather', [...state.weather, weather]);
         commit('modalModule/showModal', false, { root: true });
         commit('setNewCity', '');
       } catch (error) {
-        commit('setErrorMsg', capitalizeFirst(error.response.data.message));
+        commit('setErrorMsg', capitalizeFirst(error.responseWeather.data.message));
         commit('modalModule/showModal', true, { root: true });
       }
     }

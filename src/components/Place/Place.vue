@@ -1,38 +1,79 @@
 <template>
   <div class="place">
-    <h4 class="place__location">{{ location }}</h4>
-    <p class="place__local-time">Local time: {{currentTime}}</p>
-    <h2 class="place__temp">
-      <img :src="link" alt="">{{ temp }}°C</h2>
-    <p class="place__conditions">Feels like {{ feelLike }}°C. {{ conditions }}. {{ windDescription }}.</p>
-    <p class="place__wind">
-      <span class="place__wind-direction"><DirectionIcon :style="windRotate"/></span> {{wind}}</p>
-    <p class="place__pressure">{{pressure}}</p>
-    <p class="place__humidity">Humidity: {{ humidity }}%</p>
-    <p class="place__dew">Dew point: {{ dewPoint }}°C</p>
-    <p class="place__visibility">Visibility: {{ visibility }}km</p>
-    <div class="place__sun">
-      <div class="place__sun-item">
-        <Sunrise class="place__sun-icon"/>
-        <p class="place__sun-time">{{ sunrise }}</p>
-      </div>
-      <div class="place__sun-item">
-        <Sunset class="place__sun-icon"/>
-        <p class="place__sun-time">{{ sunset }}</p>
+    <div class="place__row">
+      <h1 class="place__temp">{{ temp }}°</h1>
+      <div class="place__conditions">
+        <div class="place__condition">
+          <div class="place__condition-icon">
+            <DropIcon/>
+          </div>
+          <p class="place__condition-value">{{ humidity }}%</p>
+        </div>
+        <div class="place__condition">
+          <div class="place__condition-icon">
+            <img :src="link" alt="">
+          </div>
+          <p class="place__condition-value">{{ conditions }}</p>
+        </div>
+        <div class="place__condition">
+          <div class="place__condition-icon">
+            <ArrowIcon :style="windRotate"/>
+          </div> 
+          <p class="place__condition-value">{{wind}}</p>
+        </div>
       </div>
     </div>
+    <div class="place__row place__row_center">
+      <h3 class="place__location">{{ location }}</h3>
+      <div class="place__sun">
+        <div class="place__sun-item">
+          <p class="place__sun-title">Восход</p>
+          <p class="place__sun-time">{{ sunrise }}</p>
+        </div>
+        <div class="place__sun-item">
+          <p class="place__sun-title">Закат</p>
+          <p class="place__sun-time">{{ sunset }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- <p class="place__local-time">Local time: {{currentTime}}</p> -->
+    <!-- <p class="place__conditions">Feels like {{ feelLike }}°. {{ conditions }}. {{ windDescription }}.</p> -->
+    <!-- <p class="place__pressure">{{pressure}}</p> -->
+    <!-- <p class="place__condition-value">{{ dewPoint }}°C</p> -->
+    <!-- <p class="place__visibility">Visibility: {{ visibility }}km</p> -->
+    
+    <div class="place__row">
+      <div class="place__percentages">
+        <div class="place__percentage" v-for="(percent,idx) in airPollutionPercentages">
+          <p>{{ percent.component }}</p>
+          <p>{{ airPollutionCurrent.find(item => item[0] === percent.component)[1] }}</p>
+          <div>
+            <div :style="`width: calc(${percent.percentage}%`"></div>
+          </div>
+          <p>{{ percent.percentage.toFixed(1) }}%</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="place__upd">
+      <p class="place__refresh">Обновление погоды: {{refreshedAt}}</p>
+      <p class="place__refresh">Обновление качества воздуха: {{refreshedPolutionAt}}</p>
+    </div> -->
   </div>
 </template>
 
 <script>
+import moment from 'moment';
 import {timeFormat, convertWindSpeed, convertWindDirection, calcDewPoint, capitalizeFirst} from '@/utils';
-import Sunrise from '@/assets/sunrise.svg';
-import Sunset from '@/assets/sunset.svg';
 import DirectionIcon from '@/assets/direction.svg';
+import DropIcon from '@/assets/drop.svg';
+import ArrowIcon from '@/assets/arrow.svg';
 
 export default {
   props: {
     weatherData: Object,
+    airPollution: Object
   },
   computed: {
     link() {
@@ -43,8 +84,7 @@ export default {
     },
     location() {
       return `${this.weatherData.name}, ${this.weatherData.sys.country}`;
-    },
-    temp() {
+    },temp() {
       return Math.round(this.weatherData.main.temp);
     },
     feelLike() {
@@ -55,10 +95,10 @@ export default {
       return capitalizeFirst(description);
     },
     windRotate() {
-      return { transform: 'rotate(' + this.weatherData.wind.deg + 'deg)'}
+      return { transform: `rotate(${this.weatherData.wind.deg}deg)`}
     },
     wind() {
-      return `${this.weatherData.wind.speed.toFixed(1)}m/s ${convertWindDirection(this.weatherData.wind.deg)}`;
+      return `${convertWindDirection(this.weatherData.wind.deg)} — ${this.weatherData.wind.speed.toFixed(1)} м/с`;
     },
     windDescription() {
       return convertWindSpeed(this.weatherData.wind.speed);
@@ -80,70 +120,135 @@ export default {
     },
     sunset() {
      return timeFormat(this.weatherData.sys.sunset, this.weatherData.timezone);
+    },
+    refreshedAt() {
+      return moment.unix(this.weatherData.dt).format("HH:mm:ss");
+    },
+    refreshedPolutionAt() {
+      return moment.unix(this.weatherData.list[0].dt).format("HH:mm:ss");
+    },
+    airPollutionCurrent() {
+      return Object.entries(this.weatherData.list[0].components).map(item => {
+        item[0] = item[0].toUpperCase()
+        return item;
+      });
+    },
+    airPollutionPercentages() {
+      const refs = [{
+        component: 'so2',
+        max: 350
+      }, {
+        component: 'no2',
+        max: 200
+      }, {
+        component: 'pm10',
+        max: 200
+      }, {
+        component: 'pm2_5',
+        max: 75
+      }, {
+        component: 'o3',
+        max: 180
+      }, {
+        component: 'co',
+        max: 15400
+      }, {
+        component: 'nh3',
+        max: 200
+      }, {
+        component: 'no',
+        max: 100
+      }]
+
+      return this.airPollutionCurrent.map(item => {
+        const max = refs.filter(entry => entry.component.toUpperCase() === item[0])[0].max;
+        item = {
+          component: item[0],
+          percentage: item[1] / max * 100
+        }
+        return item
+      })
     }
   },
   components: {
-    Sunrise, Sunset, DirectionIcon
+    ArrowIcon, DropIcon
   }
 }
 </script>
 <style lang="scss">
+@import "@/assets/styles/mixins";
+
 .place {
-  padding: 16px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-areas: "location location""localTime localTime""temp temp""conditions conditions""wind pressure""humidity dew""visibility visibility""sun sun";
-  gap: 14px;
-  box-shadow: 0 0 6px rgba(40, 40, 40, .16);
-  background-color: white;
-  border-radius: 5px;
-  align-items: center;
-  font-size: 14px;
-  &__location {
-    grid-area: location;
-  }
-
-  &__local-time {
-    grid-area: localTime;
-  }
-
-  &__temp {
-    grid-area: temp;
-    display: flex;
-    align-items: center;
-  }
-
-  &__conditions {
-    grid-area: conditions;
-  }
-
-  &__wind {
-    grid-area: wind;
-    display: flex;
-    align-items: center;
-  }
+  display: flex;
+  flex-direction: column;
   
-  &__wind-direction {
-    display: inline-block;
-    width: 24px;
-    height: 24px;
-    margin-right: 5px;
+  &__row {
+    display: flex;
+    align-items: start;
+    gap: 1.5rem;
+    justify-content: space-between;
+    
+    &:not(:first-child) {
+      margin-top: .5rem;
+    }
 
-    & svg {
-      transform-origin: center;
-      width: 100%;
-      height: 100%;
+    &_center {
+      align-items: center;
+      margin-top: 0;
     }
   }
 
-  &__pressure {
-    grid-area: pressure;
+  &__conditions {
+    margin-left: auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 4rem;
+    padding-top: 2rem;
   }
 
-  &__humidity {
-    grid-area: humidity;
+  &__condition {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .625rem;
+
+    &-icon {
+      display: flex;
+      width: 4.5rem;
+      height: 4.5rem;
+      align-items: center;
+      justify-content: center;
+
+      & svg {
+        transform-origin: center;
+        max-height: 75%;
+      }
+
+      & img {
+        width: 100%;
+        height: 100%;
+        filter: saturate(0);
+      }
+    }
+
+    &-value {
+      @include small();
+      text-align: center;
+      line-height: 1.2;
+      // white-space: nowrap;
+      max-width: 8rem;
+    }
   }
 
+
+  &__dew {
+    grid-area: dew;
+  }
+
+  &__visibility {
+    grid-area: visibility;
+  }
+ 
   &__dew {
     grid-area: dew;
   }
@@ -153,23 +258,75 @@ export default {
   }
 
   &__sun {
-    grid-area: sun;
+    @include small();
     display: flex;
-    justify-content: space-between;
-    padding: 20px 0 0;
-
+    align-items: center;
+    padding: 1rem 0;
+    gap: 1rem;
+    
     &-item {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
+      gap: .5rem;
+    }
+    
+    &-title {
+      color: var(--font-color-ghost);
+    }
+    
+    &-time {
+      @include strong();
+    }
+  }
+  &__percentages {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: .1rem;
+  }
+
+  &__percentage {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    & p {
+      flex-shrink: 0;
+      width: 4rem;
+      font-size: 1rem;
+
+      &:last-child {
+        text-align: right;
+      }
     }
 
-    &-icon {
-      width: 82px;
-      height: auto;
-      display: block;
+    &>div {
+      flex: 1;
+      height: 1rem;
+      border-left: 1px solid var(--font-color-ghost);
+      border-right: 1px solid var(--font-color-ghost);
+      padding: 0 0.5rem;
+
+      &>div {
+        height: 100%;
+        background-color: var(--font-color);
+        width: 0;
+        transition: width .2s ease;
+      }
     }
+  }
+
+  &__upd {
+    margin-top: 1rem;
+  }
+
+  &__refresh {
+    @include small();
+    font-size: 0.75rem;
+  }
+
+  &__location {
+    @include text();
+    font-weight: 900;
   }
 }
 </style>

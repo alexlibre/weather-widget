@@ -79,7 +79,7 @@ export const convertWindSpeed = (speed) => {
 }
 
 export const convertWindDirection = (deg) => {
-  const directions = ["N", "NNE", "NE", "NEE", "E", "SEE", "SE", "SSE", "S", "SSW", "SW", "SWW", "W", "NWW", "NW", "NNW"];
+  const directions = ["С", "ССВ", "СВ", "СВВ", "В", "ЮВВ", "ЮВ", "ЮЮВ", "Ю", "ЮЮЗ", "ЮЗ", "ЮЗЗ", "З", "СЗЗ", "СЗ", "ССЗ"];
   deg += 11.25;
   if (deg < 0)
     deg = 360 - Math.abs(deg) % 360;
@@ -97,7 +97,7 @@ export const calcDewPoint = (deg, hum) => {
   const a = 17.27, b = 237.7;
   const funcDewPoint = ((a * deg) / (b + deg)) + Math.log(hum / 100);
   const dewPoint = (b * funcDewPoint) / (a - funcDewPoint);
-  if (dewPoint < 0 || dewPoint > 50) {
+  if (dewPoint < 0 || dewPoint > 50 || dewPoint === NaN) {
     return "—";
   }
   return dewPoint;

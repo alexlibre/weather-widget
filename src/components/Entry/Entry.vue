@@ -3,7 +3,7 @@
     <div class="entry__item">
       <PullIcon />
       <h5 class="entry__title">{{entryData.name}}</h5>
-      <button class="entry__remove-btn" @click="remove">Remove</button>
+      <button class="entry__remove-btn" @click="remove">Удалить</button>
     </div>
   </div>
 </template>
@@ -29,6 +29,8 @@ export default {
 
 </script>
 <style lang="scss">
+@import "@/assets/styles/mixins";
+
 .entry {
   &__item {
     padding: 5px 10px;
@@ -45,20 +47,18 @@ export default {
   }
 
   &__title {
+    @include small();
+    font-weight: 400;
     margin-left: 10px;
+    color: var(--color-bg);
   }
 
   &__remove-btn {
     padding: 8px 16px;
-    background-color: white;
-    border: 1px solid gainsboro;
+    background-color: var(--font-color);;
+    border: 1px solid var(--font-color-ghost);
     cursor: pointer;
     margin-left: auto;
-
-    &:hover {
-      background-color: rgb(252, 194, 194);
-      border-color: rgb(252, 194, 194);
-    }
   }
 }
 </style>
