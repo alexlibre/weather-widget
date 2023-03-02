@@ -8,6 +8,6 @@ cd dist
 
 git add -A
 git commit -m "Deployment"
-git subtree push --prefix dist origin gh-pages
+git subtree push --prefix origin gh-pages
 
 cd -
