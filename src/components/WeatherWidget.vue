@@ -21,6 +21,7 @@
           </form>
         </div>
       </Modal>
+
     </transition>
     <div class="widget__list" v-if="weather.length">
       <Place v-for="(weatherItem, idx) in weather" :key="weatherItem.id" :weatherData="weatherItem"/>
@@ -29,8 +30,8 @@
   </div>
 </template>
 <script>
-import Place from "./Place/Place.vue";
 import Modal from "./Modal/Modal.vue";
+import Place from "./Place/Place.vue";
 import Entry from "./Entry/Entry.vue";
 import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import SettingsIcon from '../assets/settings.svg';
